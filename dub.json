@@ -1,0 +1,33 @@
+{
+	"name": "zcc",
+	"description": "D library to build C/C++ code using zig",
+	"license": "MIT",
+	"authors": [
+		"Matheus C. França"
+	],
+	"dflags-ldc": ["-preview=all"],
+	"dflags-dmd": ["-preview=all"],
+	"dflags-gdc": ["-fpreview=all"],
+	"configurations": [
+		{
+			"name": "library",
+			"targetType": "library",
+			"targetPath": "lib",
+			"targetName": "builder"
+		},
+		{
+			"name": "unittest",
+			"targetPath": "bin",
+			"targetName": "buildtest"
+		}
+	],
+	"subPackages": [
+		{
+			"name": "cc",
+			"targetType": "executable",
+			"targetPath": "bin",
+			"targetName": "zcc",
+			"mainSourceFile": "cli/app.d"
+		}
+	]
+}

@@ -19,6 +19,9 @@
 docs.json
 __dummy.html
 docs/
+bin/
+lib/
+build/
 
 # Code coverage
 *.lst
