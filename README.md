@@ -15,16 +15,16 @@ A D library for building C/C++ code using Zig as a cross-compilation toolchain, 
 
 ```d
 // Basic usage
-auto builder = new ZigCCBuilder();
-builder.addArgs(["-c", "source.c", "-o", "output.o"]);
-builder.execute();
+auto b = new Builder();
+b.addArgs(["-c", "source.c", "-o", "output.o"]);
+b.execute();
 
 // Cross-compilation
-builder.setTargetTriple("aarch64-linux-gnu");
-builder.setCpu("generic");
+b.setTargetTriple("aarch64-linux-gnu");
+b.setCpu("generic");
 
 // C++ mode
-builder.addArg("source.cpp"); // Automatically switches to C++ mode
+b.addArg("source.cpp"); // Automatically switches to C++ mode
 ```
 
 ## CI Support
@@ -33,9 +33,9 @@ Tested on multiple platforms (Linux, macOS, Windows) using DMD and LDC compilers
 
 ## Requirements
 
-- D compiler (DMD or LDC)
-- Zig compiler
-- DUB package manager
+- [D compiler](https://dlang.org/download.html)
+- [Zig compiler](https://ziglang.org/download)
+- DUB or REDUB package manager
 
 ## Installation
 
