@@ -116,7 +116,7 @@ class Builder
             result ~= ["-target", targetTriple];
         if (!cpu.empty)
             result ~= [format("-mcpu=%s", cpu)];
-        if (result.length > 2)
+        if (result.length > 3)
             result ~= "-fno-sanitize=all"; // Add only if args present
         return result;
     }
