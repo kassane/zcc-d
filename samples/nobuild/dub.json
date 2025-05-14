@@ -1,27 +1,23 @@
 {
-    "name": "nobuild",
+    "name": "importc",
     "targetType": "executable",
     "targetPath": "build",
-    "mainSourceFile": "source/app.d",
-    "lflags": [
-        "-L$PACKAGE_DIR/build"
+    "sourceFiles": [
+        "source/cffi.*"
     ],
-    "lflags-windows": [
-        "/LIBPATH:$PACKAGE_DIR\\build"
+    "dflags-ldc": [
+        "-P-Isource"
     ],
-    "libs": [
-        "cffi"
+    "dflags-dmd": [
+        "-P-Isource"
     ],
-    "preBuildCommands-linux": [
-        "mkdir -p $PACKAGE_DIR/build",
-        "$DUB run zcc:cc -y -- $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.so"
+    "dflags-gdc": [
+        "-Isource"
     ],
-    "preBuildCommands-osx": [
-        "mkdir -p $PACKAGE_DIR/build",
-        "$DUB run zcc:cc -y -- $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.dylib"
+    "preGenerateCommands-posix": [
+        "$DUB zcc:cc -y -- -c -o $PACKAGE_DIR/source/cffi.o $PACKAGE_DIR/source/c/ffi.c"
     ],
-    "preBuildCommands-windows": [
-        "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",
-        "$DUB run zcc:cc -y -- $PACKAGE_DIR/source/lib.cc -target native-windows-msvc -O2 -s -shared -fPIC -o $PACKAGE_DIR/build/cffi.dll"
+    "preGenerateCommands-windows": [
+        "$DUB zcc:cc -y -- -c -o $PACKAGE_DIR/source/cffi.obj $PACKAGE_DIR/source/c/ffi.c"
     ]
 }

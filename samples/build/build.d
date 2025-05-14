@@ -7,6 +7,7 @@
 
 import std.stdio : stderr, writeln;
 import std.path : buildPath;
+import std.file : exists, mkdir;
 import builder;
 
 int main()
@@ -14,16 +15,23 @@ int main()
     auto b = new Builder;
 
     version (Windows)
-        immutable ext = ".obj";
+        immutable lib = "cffi.dll";
+    else version (OSX)
+        immutable lib = "libcffi.dylib";
     else
-        immutable ext = ".o";
+        immutable lib = "libcffi.so";
 
     try
     {
+        if (!exists(buildPath("build")))
+            mkdir(buildPath("build"));
+
         b.addArgs([
-            "-c", buildPath("source", "c", "ffi.c"), "-o",
-            buildPath("source", "ffi" ~ ext)
+            buildPath("source", "ffi.cc"), "-shared", "-fPIC",
+            "-s", "-O2", "-o", buildPath("build", lib)
         ]);
+        version (Windows)
+            b.addArgs(["-target", "native-windows-msvc"]);
         return b.execute;
     }
     catch (Exception e)
