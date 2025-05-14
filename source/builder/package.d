@@ -77,18 +77,11 @@ class Builder
         cmds.put(transformed);
         if (!isCPlusPlus && transformed.length == 1)
         {
-            version (CppRuntime_Microsoft)
+            auto ext = extension(arg).toLower;
+            if (ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".C" || ext == ".c++")
             {
-                // MSVC target use zig cc
-            }
-            else
-            {
-                auto ext = extension(arg).toLower;
-                if (ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".C" || ext == ".c++")
-                {
-                    isCPlusPlus = true;
-                    cmds.data[1] = "c++";
-                }
+                isCPlusPlus = targetTriple.canFind("msvc") ? false : true;
+                cmds.data[1] = targetTriple.canFind("msvc") ? "cc" : "c++";
             }
         }
         return this;
