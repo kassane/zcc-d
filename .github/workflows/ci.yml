@@ -12,6 +12,9 @@ jobs:
       matrix:
         runs-on: [ubuntu-latest, macos-latest, windows-latest]
         compiler: [dmd-master, ldc-master]
+        exclude:
+          - runs-on: macos-latest
+            compiler: dmd-master
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v4
