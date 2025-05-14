@@ -13,6 +13,7 @@
 
 # Executables
 *.exe
+builder*
 
 # DUB
 .dub
@@ -22,6 +23,7 @@ docs/
 bin/
 lib/
 build/
+!samples/build/
 
 # Code coverage
 *.lst

@@ -1,0 +1,25 @@
+{
+    "name": "importc",
+    "targetType": "executable",
+    "targetPath": "build",
+    "sourceFiles": [
+        "source/ffi.*"
+    ],
+    "dflags-ldc": [
+        "-P-Isource"
+    ],
+    "dflags-dmd": [
+        "-P-Isource"
+    ],
+    "dflags-gdc": [
+        "-Isource"
+    ],
+    "preGenerateCommands-posix": [
+        "mkdir -p build",
+        "$DUB --single build.d"
+    ],
+    "preGenerateCommands-windows": [
+        "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",
+        "$DUB --single build.d"
+    ]
+}
