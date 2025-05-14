@@ -2,6 +2,8 @@
 * Copyright (c) 2025 Matheus C. França
 * See LICENSE file for details
 */
+
+/// Zig cc/c++ compiler wrapper.
 module builder;
 
 import std.stdio;
@@ -13,7 +15,7 @@ import std.typecons : Nullable;
 import std.path : extension;
 import std.exception : enforce;
 
-/// Build configuration for Zig compiler.
+/// Build configurations
 struct BuildOptions
 {
     /// Target triple (e.g., "x86_64-linux-gnu").
@@ -29,8 +31,8 @@ mixin template FlagChecks()
     static bool shouldSkipFlag(string arg) @safe pure nothrow
     {
         static immutable string[] skipExact = [
-            "--exclude-libs", "ALL", "oldnames", "legacy_stdio_definitions",
-            "d3d11", "uuid", "winspool", "libunwind"
+            "--exclude-libs", "ALL",
+            "--no-as-needed", "/nologo", "/NOLOGO"
         ];
         return skipExact.canFind(arg);
     }
@@ -66,7 +68,7 @@ class Builder
     }
 
     /// Adds a single argument to the command.
-    /// Switches to zig c++ for C++ file extensions.
+    /// Switches to zig c++ for C++ file extensions, except for MSVC targets.
     Builder addArg(string arg) @safe pure
     {
         mixin FlagChecks;
@@ -79,8 +81,12 @@ class Builder
             auto ext = extension(arg).toLower;
             if (ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
             {
-                isCPlusPlus = true;
-                cmds.data[1] = "c++";
+                // Avoid zig c++ for MSVC targets
+                if (!targetTriple.endsWith("windows-msvc"))
+                {
+                    isCPlusPlus = true;
+                    cmds.data[1] = "c++";
+                }
             }
         }
         return this;
@@ -94,10 +100,21 @@ class Builder
         return this;
     }
 
-    /// Sets the target triple.
+    /// Sets the target triple, transforming arm64-apple to aarch64-apple.
     Builder setTargetTriple(string triple) @safe pure nothrow
     {
-        targetTriple = triple;
+        if (triple.startsWith("arm64-apple"))
+        {
+            targetTriple = "aarch64" ~ triple[11 .. $]; // Replace arm64-apple to aarch64-<macos|ios>
+        }
+        else if (triple.startsWith("x86_64-apple"))
+        {
+            targetTriple = "x86_64" ~ triple[12 .. $]; // Replace x86_64-apple to x86_64-<macos|ios>
+        }
+        else
+        {
+            targetTriple = triple;
+        }
         return this;
     }
 
@@ -117,7 +134,7 @@ class Builder
         if (!cpu.empty)
             result ~= [format("-mcpu=%s", cpu)];
         if (result.length > 3)
-            result ~= "-fno-sanitize=all"; // disable ubsan
+            result ~= "-fno-sanitize=all"; // Disable ubsan
         return result;
     }
 
@@ -166,11 +183,11 @@ version (unittest)
 {
     import std.exception : assertThrown;
 
-    @("Skip libunwind and excluded flags")
+    @("Skip excluded flags")
     @safe unittest
     {
         auto builder = new Builder();
-        builder.addArg("libunwind").addArg("--exclude-libs");
+        builder.addArg("--no-as-needed").addArg("--exclude-libs");
         assert(builder.build() == ["zig", "cc"]);
     }
 
@@ -197,9 +214,9 @@ version (unittest)
     @safe unittest
     {
         auto builder = new Builder();
-        builder.setTargetTriple("x86_64-pc-linux-gnu").setCpu("generic");
+        builder.setTargetTriple("arm64-apple-macos").setCpu("generic");
         assert(builder.build() == [
-            "zig", "cc", "-target", "x86_64-pc-linux-gnu", "-mcpu=generic",
+            "zig", "cc", "-target", "aarch64-macos", "-mcpu=generic",
             "-fno-sanitize=all"
         ]);
     }
@@ -209,9 +226,7 @@ version (unittest)
     {
         auto builder = new Builder();
         builder.addArg("test.cpp");
-        assert(builder.build() == [
-            "zig", "c++", "test.cpp"
-        ]);
+        assert(builder.build() == ["zig", "c++", "test.cpp"]);
     }
 
     @("DMD rejects non-x86/x86_64 targets")
@@ -302,5 +317,35 @@ version (unittest)
         auto builder = new Builder();
         builder.addArg("-invalid-flag");
         assertThrown!Exception(builder.execute());
+    }
+
+    @("Pass -h to zig")
+    @safe unittest
+    {
+        auto builder = new Builder();
+        builder.addArg("-h");
+        assert(builder.build() == ["zig", "cc", "-h"]);
+    }
+
+    @("MSVC target avoids zig c++")
+    @safe unittest
+    {
+        auto builder = new Builder();
+        builder.setTargetTriple("x86_64-windows-msvc").addArg("test.cpp");
+        assert(builder.build() == [
+            "zig", "cc", "test.cpp", "-target", "x86_64-windows-msvc",
+            "-fno-sanitize=all"
+        ]);
+    }
+
+    @("Transform arm64-apple-ios to aarch64-ios")
+    @safe unittest
+    {
+        auto builder = new Builder();
+        builder.setTargetTriple("arm64-apple-ios").addArg("test.c");
+        assert(builder.build() == [
+            "zig", "cc", "test.c", "-target", "aarch64-ios",
+            "-fno-sanitize=all"
+        ]);
     }
 }

@@ -2,15 +2,17 @@
 	"name": "zcc",
 	"description": "D library to build C/C++ code using zig",
 	"license": "MIT",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"authors": [
 		"Matheus C. França"
 	],
 	"dflags-ldc": [
-		"-preview=all"
+		"-preview=all",
+		"--verrors-context"
 	],
 	"dflags-dmd": [
-		"-preview=all"
+		"-preview=all",
+		"-verrors=context"
 	],
 	"dflags-gdc": [
 		"-fpreview=all"
