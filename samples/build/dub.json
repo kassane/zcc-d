@@ -17,6 +17,6 @@
     ],
     "preBuildCommands-windows": [
         "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",
-        "zig cc $PACKAGE_DIR/source/ffi.cc -target native-windows-msvc -O2 -s --emit-static-lib -fPIC -o $PACKAGE_DIR/build/cffi.lib"
+        "zig build-lib -lc $PACKAGE_DIR/source/ffi.cc -target native-windows-msvc --verbose -femit-bin=$PACKAGE_DIR/build/cffi.lib"
     ]
 }
