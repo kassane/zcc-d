@@ -27,7 +27,7 @@ int main()
             mkdir(buildPath("build"));
 
         b.addArgs([
-            buildPath("source", "ffi.cc"), "-shared", "-fPIC",
+            buildPath("source", "ffi.cc"), "-v", "-shared", "-fPIC",
             "-s", "-O2", "-o", buildPath("build", lib)
         ]);
         version (Windows)
