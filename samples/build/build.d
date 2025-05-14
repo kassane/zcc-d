@@ -31,7 +31,7 @@ int main()
             "-s", "-O2", "-o", buildPath("build", lib)
         ]);
         version (Windows)
-            b.addArgs(["-target", "native-windows-msvc"]);
+            b.setTargetTriple("native-native-msvc");
         return b.execute;
     }
     catch (Exception e)
