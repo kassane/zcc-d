@@ -115,6 +115,9 @@ class Builder
         {
             targetTriple = triple;
         }
+        // Avoid zig c++ for MSVC targets - no build libc++
+        isCPlusPlus = triple.endsWith("windows-msvc") ? false : true;
+
         return this;
     }
 
