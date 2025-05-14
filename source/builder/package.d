@@ -138,6 +138,8 @@ class Builder
     int execute() @trusted
     {
         auto cmd = build();
+        cmds.data[1] = targetTriple.canFind("msvc") ? "cc" : "c++";
+
         if (cmd.length > 2)
         {
             write("[zig ", cmds.data[1], "] flags: \"");
