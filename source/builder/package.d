@@ -77,11 +77,14 @@ class Builder
         cmds.put(transformed);
         if (!isCPlusPlus && transformed.length == 1)
         {
-            auto ext = extension(arg).toLower;
-            if (ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
+            version (CppRuntime_Microsoft)
             {
-                // Avoid zig c++ for MSVC targets
-                if (!targetTriple.endsWith("-windows-msvc"))
+                // MSVC target use zig cc
+            }
+            else
+            {
+                auto ext = extension(arg).toLower;
+                if (ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".C" || ext == ".c++")
                 {
                     isCPlusPlus = true;
                     cmds.data[1] = "c++";
@@ -351,9 +354,9 @@ version (unittest)
     @safe unittest
     {
         auto builder = new Builder();
-        builder.setTargetTriple("native-windows-msvc").addArg("lib.cc");
+        builder.addArg("lib.cc").setTargetTriple("native-windows-msvc");
         assert(builder.build() == [
-            "zig", "cc", "lib.cc", "-target", "native-windows-msvc",
+            "zig", "c++", "lib.cc", "-target", "native-windows-msvc",
             "-fno-sanitize=all"
         ]);
     }
