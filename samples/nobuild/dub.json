@@ -14,14 +14,14 @@
     ],
     "preBuildCommands-linux": [
         "mkdir -p $PACKAGE_DIR/build",
-        "zig c++ $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.so"
+        "$DUB run zcc:cc -y -- $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.so"
     ],
     "preBuildCommands-osx": [
         "mkdir -p $PACKAGE_DIR/build",
-        "zig c++ $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.dylib"
+        "$DUB run zcc:cc -y -- $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.dylib"
     ],
     "preBuildCommands-windows": [
         "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",
-        "zig c++ $PACKAGE_DIR/source/lib.cc -target native-windows-msvc -O2 -s -shared -fPIC -o $PACKAGE_DIR/build/cffi.dll"
+        "$DUB run zcc:cc -y -- $PACKAGE_DIR/source/lib.cc -target native-windows-msvc -O2 -s -shared -fPIC -o $PACKAGE_DIR/build/cffi.dll"
     ]
 }
