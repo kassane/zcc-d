@@ -29,9 +29,9 @@ jobs:
         run: dub :cc -- -v ##
       - name: (Dub) Test Run
         run: dub test
-      - name: (Dub) Run nobuild example
-        working-directory: samples/nobuild
-        run: dub build -v
       - name: (Dub) Run build example
         working-directory: samples/build
+        run: dub build -v
+      - name: (Dub) Run nobuild example
+        working-directory: samples/nobuild
         run: dub build -v

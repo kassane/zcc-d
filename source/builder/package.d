@@ -31,8 +31,7 @@ mixin template FlagChecks()
     static bool shouldSkipFlag(string arg) @safe pure nothrow
     {
         static immutable string[] skipExact = [
-            "--exclude-libs", "ALL",
-            "--no-as-needed", "/nologo", "/NOLOGO"
+            "--exclude-libs", "ALL", "--no-as-needed", "/nologo", "/NOLOGO"
         ];
         return skipExact.canFind(arg);
     }
@@ -82,7 +81,7 @@ class Builder
             if (ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
             {
                 // Avoid zig c++ for MSVC targets
-                if (!targetTriple.endsWith("windows-msvc"))
+                if (!targetTriple.endsWith("-windows-msvc"))
                 {
                     isCPlusPlus = true;
                     cmds.data[1] = "c++";
@@ -100,7 +99,7 @@ class Builder
         return this;
     }
 
-    /// Sets the target triple, transforming arm64-apple to aarch64-apple.
+    /// Sets the target triple, transforming arm64-apple to aarch64-<macos|ios>.
     Builder setTargetTriple(string triple) @safe pure nothrow
     {
         if (triple.startsWith("arm64-apple"))
@@ -115,9 +114,6 @@ class Builder
         {
             targetTriple = triple;
         }
-        // Avoid zig c++ for MSVC targets - no build libc++
-        isCPlusPlus = triple.endsWith("windows-msvc") ? false : true;
-
         return this;
     }
 
@@ -190,7 +186,7 @@ version (unittest)
     @safe unittest
     {
         auto builder = new Builder();
-        builder.addArg("--no-as-needed").addArg("--exclude-libs");
+        builder.addArg("--no-as-needed").addArg("--exclude-libs").addArg("/nologo");
         assert(builder.build() == ["zig", "cc"]);
     }
 
@@ -334,9 +330,9 @@ version (unittest)
     @safe unittest
     {
         auto builder = new Builder();
-        builder.setTargetTriple("x86_64-windows-msvc").addArg("test.cpp");
+        builder.setTargetTriple("x86_64-windows-msvc").addArg("test.cc");
         assert(builder.build() == [
-            "zig", "cc", "test.cpp", "-target", "x86_64-windows-msvc",
+            "zig", "cc", "test.cc", "-target", "x86_64-windows-msvc",
             "-fno-sanitize=all"
         ]);
     }
@@ -347,7 +343,17 @@ version (unittest)
         auto builder = new Builder();
         builder.setTargetTriple("arm64-apple-ios").addArg("test.c");
         assert(builder.build() == [
-            "zig", "cc", "test.c", "-target", "aarch64-ios",
+            "zig", "cc", "test.c", "-target", "aarch64-ios", "-fno-sanitize=all"
+        ]);
+    }
+
+    @("MSVC target with native-windows-msvc")
+    @safe unittest
+    {
+        auto builder = new Builder();
+        builder.setTargetTriple("native-windows-msvc").addArg("lib.cc");
+        assert(builder.build() == [
+            "zig", "cc", "lib.cc", "-target", "native-windows-msvc",
             "-fno-sanitize=all"
         ]);
     }
