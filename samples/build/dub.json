@@ -15,7 +15,7 @@
     "dflags-gdc": [
         "-Isource"
     ],
-    "preBuildCommands": [
-        "$DUB --single build.d -- $PACKAGE_DIR/source"
-    ]
+    "preBuildCommands-linux": [],
+    "preBuildCommands-osx": [],
+    "preBuildCommands-windows": []
 }

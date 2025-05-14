@@ -12,9 +12,13 @@
     "libs": [
         "cffi"
     ],
-    "preBuildCommands-posix": [
+    "preBuildCommands-linux": [
         "mkdir -p $PACKAGE_DIR/build",
         "zig c++ $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.so"
+    ],
+    "preBuildCommands-osx": [
+        "mkdir -p $PACKAGE_DIR/build",
+        "zig c++ $PACKAGE_DIR/source/lib.cc -O2 -s -fPIC -shared -o $PACKAGE_DIR/build/libcffi.dylib"
     ],
     "preBuildCommands-windows": [
         "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",

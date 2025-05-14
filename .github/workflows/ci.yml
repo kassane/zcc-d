@@ -28,7 +28,7 @@ jobs:
         run: dub test
       - name: (Dub) Run nobuild example
         working-directory: samples/nobuild
-        run: dub run -v
+        run: dub build -v
       - name: (Dub) Run build example
         working-directory: samples/build
-        run: dub run -v
+        run: dub build -v
