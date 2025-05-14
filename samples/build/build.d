@@ -1,26 +1,29 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
-    name "build"
+    name "builder"
     dependency "zcc" path="../.."
     mainSourceFiles "build.d"
 +/
 
 import std.stdio : stderr, writeln;
+import std.path : buildPath;
 import builder;
 
-int main(string[] args)
+int main()
 {
-    auto cmdArgs = args[1 .. $];
     auto b = new Builder;
 
-    if (!BuildOptions.triple.isNull)
-        b.setTargetTriple(BuildOptions.triple.get);
-    if (!BuildOptions.cpu.isNull)
-        b.setCpu(BuildOptions.cpu.get);
+    version (Windows)
+        immutable ext = ".obj";
+    else
+        immutable ext = ".o";
 
     try
     {
-        b.addArgs(cmdArgs);
+        b.addArgs([
+            "-c", buildPath("source", "c", "ffi.c"), "-o",
+            buildPath("source", "ffi" ~ ext)
+        ]);
         return b.execute;
     }
     catch (Exception e)

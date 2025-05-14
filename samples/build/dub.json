@@ -1,10 +1,9 @@
 {
-    "name": "build",
+    "name": "importc",
     "targetType": "executable",
     "targetPath": "build",
-    "mainSourceFile": "source/app.d",
-    "libs": [
-        "cffi"
+    "sourceFiles": [
+        "source/ffi.*"
     ],
     "dflags-ldc": [
         "-P-Isource"
@@ -15,7 +14,12 @@
     "dflags-gdc": [
         "-Isource"
     ],
-    "preBuildCommands-linux": [],
-    "preBuildCommands-osx": [],
-    "preBuildCommands-windows": []
+    "preBuildCommands-posix": [
+        "mkdir -p build",
+        "$DUB --single build.d"
+    ],
+    "preBuildCommands-windows": [
+        "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",
+        "$DUB --single build.d"
+    ]
 }
