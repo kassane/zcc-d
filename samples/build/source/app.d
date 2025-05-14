@@ -1,28 +1,5 @@
 import c.ffi;
 
-// import core.stdc.stdint;
-// import core.stdc.stdlib;
-// import core.stdc.string;
-
-// extern (C)
-// {
-//     struct FFIData
-//     {
-//         int32_t id;
-//         char[64] name;
-//         double value;
-//     }
-
-//     FFIData* create_data(int32_t id, const(char)* name, double value);
-//     void free_data(FFIData* data);
-
-//     alias CallbackFunc = void function(int32_t status);
-//     void register_callback(CallbackFunc callback);
-
-//     int32_t sum_array(int32_t* array, size_t length);
-//     char* reverse_string(const(char)* input);
-// }
-
 void main() @trusted
 {
     // Test creating and using FFIData
@@ -46,8 +23,7 @@ void main() @trusted
 
 extern (C)
 {
-    alias CallbackFn = void function(int);
-    CallbackFn callback = (int status = 42) {
+    CallbackFunc callback = (int status = 42) {
         printf("Callback received status: %d\n", status);
     };
 }

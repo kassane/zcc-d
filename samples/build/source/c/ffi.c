@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Example of C struct that can be used across FFI
 typedef struct {
   int32_t id;
   char name[64];
@@ -30,7 +29,7 @@ typedef void (*CallbackFunc)(int32_t status);
 // Function that accepts a callback
 extern void register_callback(CallbackFunc callback) {
   // Store callback for later use
-  callback(200); // Example: immediately call with success status
+  callback(200);
 }
 
 // Array handling example
