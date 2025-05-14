@@ -23,6 +23,6 @@ jobs:
           compiler: ${{ matrix.compiler }}
 
       - name: (Dub) Build & Run
-        run: dub :cc -- --version
+        run: dub :cc -- -v ##
       - name: (Dub) Test Run
         run: dub test
