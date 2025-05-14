@@ -12,7 +12,11 @@
     "libs": [
         "cffi"
     ],
-    "preBuildCommands": [
+    "preBuildCommands-posix": [
         "$DUB --single build.d"
+    ],
+    "preBuildCommands-windows": [
+        "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",
+        "zig cc $PACKAGE_DIR/source/lib.cc -target native-windows-msvc -O2 -s -shared -fPIC -o $PACKAGE_DIR/build/cffi.dll"
     ]
 }
