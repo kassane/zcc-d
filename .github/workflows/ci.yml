@@ -34,4 +34,4 @@ jobs:
         run: dub build -v
       - name: (Dub) Run nobuild example
         working-directory: samples/nobuild
-        run: dub build -v
+        run: dub run -v
