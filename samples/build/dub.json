@@ -1,0 +1,21 @@
+{
+    "name": "build",
+    "targetType": "executable",
+    "targetPath": "build",
+    "mainSourceFile": "source/app.d",
+    "libs": [
+        "cffi"
+    ],
+    "dflags-ldc": [
+        "-P-Isource"
+    ],
+    "dflags-dmd": [
+        "-P-Isource"
+    ],
+    "dflags-gdc": [
+        "-Isource"
+    ],
+    "preBuildCommands": [
+        "$DUB --single build.d -- $PACKAGE_DIR/source"
+    ]
+}
