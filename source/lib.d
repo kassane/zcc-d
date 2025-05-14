@@ -117,7 +117,7 @@ class Builder
         if (!cpu.empty)
             result ~= [format("-mcpu=%s", cpu)];
         if (result.length > 3)
-            result ~= "--fno-sanitize=all"; // Add only if args present
+            result ~= "-fno-sanitize=all"; // disable ubsan
         return result;
     }
 
@@ -181,7 +181,7 @@ version (unittest)
         builder.addArg("-group");
         assert(builder.build() == [
             "zig", "cc", "-Wl,--start-group", "-Wl,--end-group",
-            "--fno-sanitize=all"
+            "-fno-sanitize=all"
         ]);
     }
 
@@ -200,7 +200,7 @@ version (unittest)
         builder.setTargetTriple("x86_64-pc-linux-gnu").setCpu("generic");
         assert(builder.build() == [
             "zig", "cc", "-target", "x86_64-pc-linux-gnu", "-mcpu=generic",
-            "--fno-sanitize=all"
+            "-fno-sanitize=all"
         ]);
     }
 
@@ -242,7 +242,7 @@ version (unittest)
         auto builder = new Builder();
         builder.addArg("-Wall").addArg("-std=c99").addArg("-h");
         assert(builder.build() == [
-            "zig", "cc", "-Wall", "-std=c99", "-h", "--fno-sanitize=all"
+            "zig", "cc", "-Wall", "-std=c99", "-h", "-fno-sanitize=all"
         ]);
     }
 
@@ -279,7 +279,7 @@ version (unittest)
         auto builder = new Builder();
         builder.addArg("test.cpp").addArg("-some-flag");
         assert(builder.build() == [
-            "zig", "c++", "test.cpp", "-some-flag", "--fno-sanitize=all"
+            "zig", "c++", "test.cpp", "-some-flag", "-fno-sanitize=all"
         ]);
     }
 
@@ -291,7 +291,7 @@ version (unittest)
             auto builder = new Builder();
             builder.setTargetTriple("native-native");
             assert(builder.build() == [
-                "zig", "cc", "-target", "native-native", "--fno-sanitize=all"
+                "zig", "cc", "-target", "native-native", "-fno-sanitize=all"
             ]);
         }
     }

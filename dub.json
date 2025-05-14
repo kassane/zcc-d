@@ -2,7 +2,7 @@
 	"name": "zcc",
 	"description": "D library to build C/C++ code using zig",
 	"license": "MIT",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"authors": [
 		"Matheus C. França"
 	],
