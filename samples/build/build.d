@@ -27,19 +27,21 @@ int main()
     {
         if (!exists(buildPath("build")))
             mkdir(buildPath("build"));
-
-        b.file(buildPath("source", "ffi.cc"));
         version (Windows)
         {
+            // zig build-lib
             b.setTargetTriple("native-native-msvc");
+            b.file(buildPath("source", "ffi.cc"));
             return b.buildLibrary(buildPath("build", lib));
         }
         else
         {
+            // zig c++
             b.addArgs([
                 "-shared", "-fPIC",
                 "-s", "-O2", "-o", buildPath("build", lib)
             ]);
+            b.file(buildPath("source", "ffi.cc"));
             return b.execute;
         }
     }
