@@ -206,7 +206,7 @@ class Builder
             return 1;
         }
         auto cmd = ["zig", "build-lib"] ~ sourceFiles.data;
-        cmd ~= ["-femit-bin=" ~ libpath, "-fno-sanitize-c"];
+        cmd ~= ["-femit-bin=" ~ libpath, "-OReleaseFast"]; // compiler-rt + ubsan disabled
         if (isShared)
             cmd ~= ["-dynamic"];
         if (!targetTriple.empty)
