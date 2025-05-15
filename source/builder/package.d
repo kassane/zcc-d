@@ -121,7 +121,7 @@ class Builder
         auto ext = extension(file).toLower;
         if (ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
         {
-            if (!targetTriple.endsWith("-windows-msvc"))
+            if (!targetTriple.endsWith("msvc"))
             {
                 isCPlusPlus = true;
                 cmds.data[1] = "c++";
@@ -217,8 +217,8 @@ class Builder
         mixin FlagChecks;
         auto clangFlags = cmds.data.filter!(isClangFlag).array;
         if (clangFlags.length)
-            cmd ~= ["-cflags"] ~ clangFlags ~ ["--"];
-        cmd ~= isCPlusPlus && !targetTriple.endsWith("-windows-msvc") ? "-lc++" : "-lc";
+            cmd ~= ["-cflags"] ~ clangFlags[2 .. $] ~ ["--"];
+        cmd ~= isCPlusPlus && !targetTriple.endsWith("msvc") ? "-lc++" : "-lc";
 
         debug
         {
