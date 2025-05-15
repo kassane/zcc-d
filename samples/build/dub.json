@@ -1,25 +1,18 @@
 {
-    "name": "importc",
+    "name": "cxxbuild",
     "targetType": "executable",
     "targetPath": "build",
-    "sourceFiles": [
-        "source/ffi.*"
+    "mainSourceFile": "source/app.d",
+    "lflags": [
+        "-L$PACKAGE_DIR/build"
     ],
-    "dflags-ldc": [
-        "-P-Isource"
+    "lflags-windows": [
+        "/LIBPATH:$PACKAGE_DIR\\build"
     ],
-    "dflags-dmd": [
-        "-P-Isource"
+    "libs": [
+        "cffi"
     ],
-    "dflags-gdc": [
-        "-Isource"
-    ],
-    "preGenerateCommands-posix": [
-        "mkdir -p build",
-        "$DUB --single build.d"
-    ],
-    "preGenerateCommands-windows": [
-        "powershell New-Item -ItemType Directory -Force -Path $PACKAGE_DIR/build",
+    "preBuildCommands": [
         "$DUB --single build.d"
     ]
 }

@@ -21,7 +21,7 @@ A D library for building C/C++ code using Zig as a cross-compilation toolchain, 
 
 - [D compiler](https://dlang.org/download.html)
 - [Zig compiler](https://ziglang.org/download)
-- [DUB](https://github.com/dlang/dub/releases) or [REDUB](https://github.com/MrcSnm/redub/releases) package manager
+- [dub](https://github.com/dlang/dub/releases) or [redub](https://github.com/MrcSnm/redub/releases) package manager
 
 ## Installation
 
@@ -34,20 +34,28 @@ dub add zcc
 **library**
 
 ```d
-// Basic usage
+// Compile C/C++ code
 auto b = new Builder();
-b.addArgs(["-c", "source.c", "-o", "output.o"]);
 
-// Cross-compilation
-b.setTargetTriple("aarch64-linux-gnu");
-b.setCpu("generic");
+// Use `zig cc` or `zig c++`
+b.file("source.cpp")  // Auto-detects C++ mode
+ .setTargetTriple("aarch64-linux-gnu")
+ .setCpu("generic")
+ .addArg("-Wall")
+ .execute();
 
-// C++ mode
-b.addArg("source.cpp"); // Automatically switches to C++ mode
+// Build library
+auto lb = new Builder();
 
-// Running the build
-b.execute();
+// use `zig build-lib -lc` or `zig build-lib -lc++`
+lb.files(["source.cpp", "resource.cc"])  // Auto-detects C++ mode
+ .setTargetTriple("riscv64-linux-gnu")
+ .setCpu("baseline")
+ .addArg("-Wall")
+ .buildLibrary("libname");
 ```
+
+See more in [samples](samples).
 
 **executable**
 

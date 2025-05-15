@@ -26,7 +26,7 @@ jobs:
           compiler: ${{ matrix.compiler }}
 
       - name: (Dub) Build & Run
-        run: dub :cc -- -v ##
+        run: dub :cc -b release -q -- -###
       - name: (Dub) Test Run
         run: dub test
       - name: (Dub) Run build example
@@ -34,4 +34,4 @@ jobs:
         run: dub build -v
       - name: (Dub) Run nobuild example
         working-directory: samples/nobuild
-        run: dub build -v
+        run: dub run -v
