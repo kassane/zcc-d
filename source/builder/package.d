@@ -114,7 +114,7 @@ class Builder
 
     /// Adds a source file, enabling C++ mode for .cpp/.cxx/.cc/.c++ files.
     /// Params:
-    ///   file = Source file path.
+    ///   file = Source file path (.c, .cpp, .cxx, .cc, .c++, .o, .obj, .s).
     /// Returns: This builder for chaining.
     Builder file(string file) @safe pure
     {
@@ -127,7 +127,7 @@ class Builder
                 cmds.data[1] = "c++";
             }
         }
-        else if (ext != ".c" || ext == ".o" || ext == ".obj" || ext != ".s")
+        else if (ext != ".c" && ext != ".o" && ext != ".obj" && ext != ".s")
             return this;
         sourceFiles.put(file);
         return this;
@@ -193,7 +193,7 @@ class Builder
         return result;
     }
 
-    /// Builds a static library with Zig build-lib.
+    /// Builds a static or dynamic library with Zig build-lib.
     /// Params:
     ///   libpath = Output file path.
     ///   isShared = Build a dynamic library if true, static if false.
@@ -206,9 +206,7 @@ class Builder
             return 1;
         }
         auto cmd = ["zig", "build-lib"] ~ sourceFiles.data;
-        cmd ~= [
-            "-femit-bin=" ~ libpath, "-fno-sanitize-c"
-        ];
+        cmd ~= ["-femit-bin=" ~ libpath, "-fno-sanitize-c"];
         if (isShared)
             cmd ~= ["-dynamic"];
         if (!targetTriple.empty)
@@ -219,7 +217,7 @@ class Builder
         mixin FlagChecks;
         auto clangFlags = cmds.data.filter!(isClangFlag).array;
         if (clangFlags.length)
-            cmd ~= ["-cflags"] ~ clangFlags[2 .. $] ~ ["--"];
+            cmd ~= ["-cflags"] ~ clangFlags ~ ["--"];
         cmd ~= isCPlusPlus && !targetTriple.endsWith("-windows-msvc") ? "-lc++" : "-lc";
 
         debug
@@ -487,7 +485,23 @@ version (unittest)
     unittest
     {
         auto builder = new Builder();
-        builder.file("test.c").addArg("-Wall").addArg("rc.s");
+        builder.file("test.c").addArg("-Wall").file("rc.s");
         assertThrown!Exception(builder.buildLibrary("test.dylib"));
+    }
+
+    @("Add object file")
+    unittest
+    {
+        auto builder = new Builder();
+        builder.file("test.o");
+        assert(builder.build() == ["zig", "cc", "test.o"]);
+    }
+
+    @("Add assembly file")
+    unittest
+    {
+        auto builder = new Builder();
+        builder.file("test.s");
+        assert(builder.build() == ["zig", "cc", "test.s"]);
     }
 }
