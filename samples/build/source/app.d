@@ -23,31 +23,33 @@ void main() @trusted
     delete_complex_object(obj);
 }
 
-extern (C):
-// String handling
-const(char)* get_string();
-void process_string(const(char)* input);
-
-// Array handling
-int* create_array(size_t size);
-void delete_array(int* arr);
-
-// Struct example for FFI
-struct FFIPoint
+extern (C)
 {
-    double x;
-    double y;
+    // String handling
+    const(char)* get_string();
+    void process_string(const(char)* input);
+
+    // Array handling
+    int* create_array(size_t size);
+    void delete_array(int* arr);
+
+    // Struct example for FFI
+    struct FFIPoint
+    {
+        double x;
+        double y;
+    }
+
+    FFIPoint* create_point(double x, double y);
+    void delete_point(FFIPoint* point);
+
+    // Callback example
+    alias CallbackFn = void function(int);
+    void register_callback(CallbackFn callback);
+
+    // C++ class wrapper
+    void* create_complex_object();
+    void delete_complex_object(void* obj);
+    void set_complex_value(void* obj, int value);
+    int get_complex_value(void* obj);
 }
-
-FFIPoint* create_point(double x, double y);
-void delete_point(FFIPoint* point);
-
-// Callback example
-alias CallbackFn = void function(int);
-void register_callback(CallbackFn callback);
-
-// C++ class wrapper
-void* create_complex_object();
-void delete_complex_object(void* obj);
-void set_complex_value(void* obj, int value);
-int get_complex_value(void* obj);

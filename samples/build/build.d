@@ -3,11 +3,13 @@
     name "builder"
     dependency "zcc" path="../.."
     mainSourceFiles "build.d"
+    buildTypes "release"
 +/
 
 import std.stdio : stderr, writeln;
-import std.path : buildPath;
+import std.path : buildPath, extension;
 import std.file : exists, mkdir;
+import std.string : toLower;
 import builder;
 
 int main()
@@ -15,7 +17,7 @@ int main()
     auto b = new Builder;
 
     version (Windows)
-        immutable lib = "cffi.dll";
+        immutable lib = "cffi.lib";
     else version (OSX)
         immutable lib = "libcffi.dylib";
     else
@@ -26,13 +28,20 @@ int main()
         if (!exists(buildPath("build")))
             mkdir(buildPath("build"));
 
-        b.addArgs([
-            buildPath("source", "ffi.cc"), "-v", "-shared", "-fPIC",
-            "-s", "-O2", "-o", buildPath("build", lib)
-        ]);
+        b.file(buildPath("source", "ffi.cc"));
         version (Windows)
+        {
             b.setTargetTriple("native-native-msvc");
-        return b.execute;
+            return b.buildLibrary(buildPath("build", lib));
+        }
+        else
+        {
+            b.addArgs([
+                "-shared", "-fPIC",
+                "-s", "-O2", "-o", buildPath("build", lib)
+            ]);
+            return b.execute;
+        }
     }
     catch (Exception e)
     {

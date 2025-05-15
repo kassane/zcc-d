@@ -91,7 +91,8 @@ class Builder
     Builder addArg(string arg) @safe pure
     {
         auto ext = extension(arg).toLower;
-        if (ext == ".c" || ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
+        if (ext == ".c" || ext == ".o" || ext == ".obj" || ext == ".s"
+            || ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
             return this;
         if (arg == "-target" || arg.startsWith("--target="))
             return this;
@@ -126,7 +127,7 @@ class Builder
                 cmds.data[1] = "c++";
             }
         }
-        else if (ext != ".c")
+        else if (ext != ".c" || ext == ".o" || ext == ".obj" || ext != ".s")
             return this;
         sourceFiles.put(file);
         return this;
@@ -206,8 +207,10 @@ class Builder
         }
         auto cmd = ["zig", "build-lib"] ~ sourceFiles.data;
         cmd ~= [
-            "-femit-bin=" ~ libpath, isShared ? "-dynamic": "", "-fno-sanitize-c"
+            "-femit-bin=" ~ libpath, "-fno-sanitize-c"
         ];
+        if (isShared)
+            cmd ~= ["-dynamic"];
         if (!targetTriple.empty)
             cmd ~= ["-target", targetTriple];
         if (!cpu.empty)
@@ -217,12 +220,15 @@ class Builder
         auto clangFlags = cmds.data.filter!(isClangFlag).array;
         if (clangFlags.length)
             cmd ~= ["-cflags"] ~ clangFlags[2 .. $] ~ ["--"];
-        cmd ~= isCPlusPlus ? "-lc++" : "-lc";
+        cmd ~= isCPlusPlus && !targetTriple.endsWith("-windows-msvc") ? "-lc++" : "-lc";
 
-        debug write("[zig build-lib] flags: \"");
-        foreach (c; cmd[2 .. $])
-            write(c, " ");
-        writeln("\"");
+        debug
+        {
+            write("[zig build-lib] flags: \"");
+            foreach (c; cmd[2 .. $])
+                write(c, " ");
+            writeln("\"");
+        }
 
         return executeCommand(cmd, "build-lib");
     }
@@ -234,10 +240,13 @@ class Builder
         auto cmd = build();
         if (cmd.length > BASE_COMMAND_LENGTH)
         {
-            debug write("[zig ", cmds.data[1], "] flags: \"");
-            foreach (c; cmd[BASE_COMMAND_LENGTH .. $])
-                write(c, " ");
-            writeln("\"");
+            debug
+            {
+                write("[zig ", cmds.data[1], "] flags: \"");
+                foreach (c; cmd[BASE_COMMAND_LENGTH .. $])
+                    write(c, " ");
+                writeln("\"");
+            }
         }
         return executeCommand(cmd, cmds.data[1]);
     }
