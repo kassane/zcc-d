@@ -13,7 +13,7 @@
 
 # Executables
 *.exe
-builder*
+samples/build/builder
 
 # DUB
 .dub

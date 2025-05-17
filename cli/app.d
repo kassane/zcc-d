@@ -7,11 +7,16 @@ import std.string : toLower;
 
 int main(string[] args) @safe
 {
-    auto cmdArgs = args[1 .. $];
     auto b = new Builder;
 
+    // Check if triple set msvc, to avoid libc++ build issues
+    if (!BuildOptions.triple.isNull)
+        b.setTargetTriple(BuildOptions.triple.get);
+    if (!BuildOptions.cpu.isNull)
+        b.setCpu(BuildOptions.cpu.get);
+
     string[] flags;
-    foreach (arg; cmdArgs)
+    foreach (arg; args[1 .. $])
     {
         auto ext = extension(arg).toLower;
         if (ext == ".s" || ext == ".c" || ext == ".o" || ext == ".obj" || ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
@@ -19,11 +24,6 @@ int main(string[] args) @safe
         else
             flags ~= arg;
     }
-
-    if (!BuildOptions.triple.isNull)
-        b.setTargetTriple(BuildOptions.triple.get);
-    if (!BuildOptions.cpu.isNull)
-        b.setCpu(BuildOptions.cpu.get);
 
     try
     {
