@@ -65,10 +65,10 @@ class Builder
     private enum UNKNOWN_UNKNOWN_LENGTH = "-unknown-unknown".length;
     /// Allowed DMD architectures.
     private static immutable ALLOWED_DMD_ARCHES = ["x86_64", "i386", "i686"];
+    //dfmt off
     /// Supported Zig triples.
-    private static immutable SUPPORTED_ZIG_TRIPLES = [
-        "arc-linux-gnu", "arm-freebsd-eabihf", "arm-linux-gnueabi",
-        "arm-linux-gnueabihf",
+     private static immutable SUPPORTED_ZIG_TRIPLES = [
+        "arc-linux-gnu", "arm-freebsd-eabihf", "arm-linux-gnueabi", "arm-linux-gnueabihf",
         "arm-linux-musleabi", "arm-linux-musleabihf", "armeb-linux-gnueabi",
         "armeb-linux-gnueabihf", "armeb-linux-musleabi", "armeb-linux-musleabihf",
         "thumb-freebsd-eabihf", "thumb-linux-musleabi", "thumb-linux-musleabihf",
@@ -80,30 +80,22 @@ class Builder
         "loongarch64-linux-musl", "loongarch64-linux-muslsf", "m68k-linux-gnu",
         "m68k-linux-musl", "mips-linux-gnueabi", "mips-linux-gnueabihf",
         "mips-linux-musleabi", "mips-linux-musleabihf", "mipsel-linux-gnueabi",
-        "mipsel-linux-gnueabihf", "mipsel-linux-musleabi",
-        "mipsel-linux-musleabihf",
-        "mips64-linux-gnuabi64", "mips64-linux-gnuabin32",
-        "mips64-linux-muslabi64",
-        "mips64-linux-muslabin32", "mips64el-linux-gnuabi64",
-        "mips64el-linux-gnuabin32",
-        "mips64el-linux-muslabi64", "mips64el-linux-muslabin32",
-        "powerpc-freebsd-eabihf",
-        "powerpc-linux-gnueabi", "powerpc-linux-gnueabihf",
-        "powerpc-linux-musleabi",
-        "powerpc-linux-musleabihf", "powerpc64-freebsd-none",
-        "powerpc64-linux-gnu",
-        "powerpc64-linux-musl", "powerpc64le-freebsd-none",
-        "powerpc64le-linux-gnu",
+        "mipsel-linux-gnueabihf", "mipsel-linux-musleabi", "mipsel-linux-musleabihf",
+        "mips64-linux-gnuabi64", "mips64-linux-gnuabin32", "mips64-linux-muslabi64",
+        "mips64-linux-muslabin32", "mips64el-linux-gnuabi64", "mips64el-linux-gnuabin32",
+        "mips64el-linux-muslabi64", "mips64el-linux-muslabin32", "powerpc-freebsd-eabihf",
+        "powerpc-linux-gnueabi", "powerpc-linux-gnueabihf", "powerpc-linux-musleabi",
+        "powerpc-linux-musleabihf", "powerpc64-freebsd-none", "powerpc64-linux-gnu",
+        "powerpc64-linux-musl", "powerpc64le-freebsd-none", "powerpc64le-linux-gnu",
         "powerpc64le-linux-musl", "riscv32-linux-gnu", "riscv32-linux-musl",
         "riscv64-freebsd-none", "riscv64-linux-gnu", "riscv64-linux-musl",
-        "s390x-linux-gnu", "s390x-linux-musl", "sparc-linux-gnu",
-        "sparc64-linux-gnu",
+        "s390x-linux-gnu", "s390x-linux-musl", "sparc-linux-gnu", "sparc64-linux-gnu",
         "wasm32-wasi-musl", "wasm32-wasi", "wasm32-emscripten", "x86-freebsd-none",
-        "x86-linux-gnu", "x86-linux-musl", "x86-windows-gnu",
-        "x86_64-freebsd-none",
+        "x86-linux-gnu", "x86-linux-musl", "x86-windows-gnu", "x86_64-freebsd-none",
         "x86_64-linux-gnu", "x86_64-linux-gnux32", "x86_64-linux-musl",
         "x86_64-linux-muslx32", "x86_64-macos-none", "x86_64-windows-gnu"
     ];
+    //dfmt on
 
     private Appender!(string[]) cmds;
     private Appender!(string[]) sourceFiles;
@@ -315,7 +307,7 @@ class Builder
             return 1;
         }
         auto cmd = ["zig", "build-lib"] ~ sourceFiles.data;
-        cmd ~= ["-femit-bin=" ~ libpath, "-OReleaseFast"];
+        cmd ~= ["-femit-bin=" ~ libpath, "-OReleaseFast"]; // disble ubsan
         if (isShared)
             cmd ~= ["-dynamic"];
         if (!targetTriple.empty)
@@ -326,7 +318,7 @@ class Builder
         mixin FlagChecks;
         auto clangFlags = cmds.data.filter!(isClangFlag).array;
         if (clangFlags.length)
-            cmd ~= ["-cflags"] ~ clangFlags ~ ["--"];
+            cmd ~= ["-cflags"] ~ clangFlags[2 .. $] ~ ["--"];
         cmd ~= isCPlusPlus && !targetTriple.endsWith("msvc") ? "-lc++" : "-lc";
 
         debug
