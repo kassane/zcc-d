@@ -30,10 +30,10 @@ jobs:
       - name: (Dub) Build & Run
         run: dub :cc -b release -q -- -###
       - name: (Dub) Test Run
-        run: dub test
+        run: dub test -q
       - name: (Dub) Run build example
         working-directory: samples/build
-        run: dub build -v
+        run: dub build -v -q
       - name: (Dub) Run nobuild example
         working-directory: samples/nobuild
-        run: dub run -v
+        run: dub run -v -q
