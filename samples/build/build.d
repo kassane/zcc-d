@@ -9,7 +9,6 @@
 import std.stdio : stderr, writeln;
 import std.path : buildPath;
 import std.file : exists, mkdir;
-import std.string : toLower;
 import builder;
 
 int main()
