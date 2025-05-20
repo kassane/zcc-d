@@ -126,7 +126,7 @@ class Builder
         if (ext == ".c" || ext == ".o" || ext == ".obj" || ext == ".s"
             || ext == ".cpp" || ext == ".cxx" || ext == ".cc" || ext == ".c++")
             return this;
-        if (arg == "-target" || arg.startsWith("--target="))
+        if (arg == "--target" || arg.startsWith("--target="))
             return this;
         mixin FlagChecks;
         cmds.put(processFlag(arg));
